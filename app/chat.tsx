@@ -37,16 +37,6 @@ export default function ChatScreen() {
 
   useEffect(() => {
     loadChatHistory();
-
-    async function fetchModels() {
-      try {
-        const models = await genAI.listModels();
-        console.log('Available Gemini models:', models);
-      } catch (error) {
-        console.error('Error listing models:', error);
-      }
-    }
-    fetchModels();
   }, []);
 
   
@@ -90,7 +80,7 @@ export default function ChatScreen() {
     setIsLoading(true);
 
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const result = await model.generateContent({
         contents: [
