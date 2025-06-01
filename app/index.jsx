@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, Image } from "react-native";
+import { useRouter } from 'expo-router';
 
 import Logo from "../assets/adaptive-icon.png";
 import { useRef, useEffect, useState } from "react";
@@ -23,6 +24,7 @@ const carouselImages = [
 const Menu = () => {
   const scrollRef = useRef(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -104,6 +106,19 @@ const Menu = () => {
           style={styles.menuIcon}
         />
         <Text style={styles.menuText}>Settings</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={styles.menuCard}
+        onPress={() => router.push('/chat')}
+      >
+        <Image
+          source={{
+            uri: "https://img.icons8.com/ios-filled/50/000000/chat-bubble.png",
+          }}
+          style={styles.menuIcon}
+        />
+        <Text style={styles.menuText}>Chat with AI</Text>
       </TouchableOpacity>
 
       <View style={styles.buttonRow}>
