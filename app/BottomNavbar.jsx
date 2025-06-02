@@ -3,10 +3,13 @@ import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
+
 export default function BottomNavbar() {
   const router = useRouter();
+
+
   return (
-    <View style={styles.navbar}>
+    <View style={[styles.navbar]}>
       <TouchableOpacity style={styles.navItem} onPress={() => router.push('/HomePage')}>
         <Icon name="home" size={26} color="#6c63ff" />
       </TouchableOpacity>
