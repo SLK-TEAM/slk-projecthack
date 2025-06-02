@@ -2,7 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
+// <<<<<<< HEAD
 // import Logo from '../assets/Gover-nice Yellow-Logo.png';
+// =======
+import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
+
+// >>>>>>> c1c20d026d92f85ab82533a0d66cbe6cd5a6b3bb
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 

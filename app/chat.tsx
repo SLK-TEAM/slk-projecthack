@@ -19,10 +19,7 @@ import BottomNavbar from './BottomNavbar';
 
 const GEMINI_API_KEY = 'AIzaSyA5jWOa-JeoyGVPUGvpIb_aSRoDqmq8iUU';
 
-console.log('Loaded Gemini API Key:', GEMINI_API_KEY);
-
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-
 
 interface Message {
   text: string;
@@ -34,13 +31,22 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState([] as Message[]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [language, setLanguage] = useState<'en' | 'tl'>('en');
+
   const scrollViewRef = useRef<ScrollViewType>(null);
 
   useEffect(() => {
     loadChatHistory();
+    loadLanguagePreference();
   }, []);
 
-  
+  useEffect(() => {
+    AsyncStorage.setItem('chatLanguage', language);
+  }, [language]);
+
+  const toggleLanguage = () => {
+    setLanguage((prev) => (prev === 'en' ? 'tl' : 'en'));
+  };
 
   const loadChatHistory = async () => {
     try {
@@ -57,7 +63,16 @@ export default function ChatScreen() {
     }
   };
 
-  
+  const loadLanguagePreference = async () => {
+    try {
+      const savedLang = await AsyncStorage.getItem('chatLanguage');
+      if (savedLang === 'en' || savedLang === 'tl') {
+        setLanguage(savedLang);
+      }
+    } catch (error) {
+      console.error('Error loading language preference:', error);
+    }
+  };
 
   const saveChatHistory = async (newMessages: Message[]) => {
     try {
@@ -87,7 +102,11 @@ export default function ChatScreen() {
         contents: [
           {
             role: 'user',
-            parts: [{ text: inputText.trim() }],
+            parts: [
+              {
+                text: `Please respond in ${language === 'en' ? 'English' : 'Tagalog'}: ${inputText.trim()}`,
+              },
+            ],
           },
         ],
       });
@@ -122,12 +141,17 @@ export default function ChatScreen() {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
+        <View style={styles.languageToggleContainer}>
+          <Button mode="outlined" onPress={toggleLanguage}>
+            Language: {language === 'en' ? 'English' : 'Tagalog'}
+          </Button>
+        </View>
         <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
@@ -152,6 +176,7 @@ export default function ChatScreen() {
           ))}
         </ScrollView>
       </KeyboardAvoidingView>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
@@ -229,5 +254,9 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     justifyContent: 'center',
+  },
+  languageToggleContainer: {
+    padding: 8,
+    alignItems: 'center',
   },
 });
