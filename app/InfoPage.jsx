@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
+import TopBanner from './TopBanner';
 
 const topics = [
   {
@@ -14,7 +15,7 @@ const topics = [
   },
   {
     key: 'accountability',
-    title: 'Accountability Mechanisms',
+    title: '8 Principles of Good Governance',
     genre: 'Principle',
     thumbnail: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
     description: 'Accountability means officials are answerable for their actions and decisions.',
@@ -74,6 +75,7 @@ export default function InfoPage() {
           </View>
         ))}
       </ScrollView>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -82,7 +84,7 @@ export default function InfoPage() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    paddingBottom: 80,
+    paddingTop: 180,
   },
   pageTitle: {
     fontSize: 26,

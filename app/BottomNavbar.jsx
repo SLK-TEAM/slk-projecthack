@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/Feather';
 
 
 export default function BottomNavbar() {
@@ -11,19 +10,19 @@ export default function BottomNavbar() {
   return (
     <View style={[styles.navbar]}>
       <TouchableOpacity style={styles.navItem} onPress={() => router.push('/HomePage')}>
-        <Icon name="home" size={26} color="#6c63ff" />
+        <Image source={require('../assets/home.png')} style={styles.iconhome} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.navItem} onPress={() => router.push('/InfoPage')}>
-        <Icon name="info" size={26} color="#6c63ff" />
+        <Image source={require('../assets/open-book.png')} style={styles.iconbook} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.botButton} onPress={() => router.push('/chat')}>
-        <Image source={{ uri: 'https://i.imgur.com/8Km9tLL.png' }} style={styles.botIcon} />
+        <Image source={require('../assets/chat-bot.png')} style={styles.botIcon} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.navItem} onPress={() => router.push('/QuizPage')}>
-        <Icon name="help-circle" size={26} color="#6c63ff" />
+        <Image source={require('../assets/qna.png')} style={styles.iconquiz} />
       </TouchableOpacity>
       <TouchableOpacity style={styles.navItem} onPress={() => router.push('/ProfilePage')}>
-        <Icon name="user" size={26} color="#6c63ff" />
+        <Image source={require('../assets/account.png')} style={styles.iconprofile} />
       </TouchableOpacity>
     </View>
   );
@@ -64,10 +63,32 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     top: -18,
   },
+  iconhome: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+  },
+  iconbook: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  iconquiz: {
+    width: 33,
+    height: 33,
+    resizeMode: 'contain',
+  },
+  iconprofile: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+
   botIcon: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 22,
     backgroundColor: '#e0e0e0',
+    resizeMode: 'contain',
   },
 }); 

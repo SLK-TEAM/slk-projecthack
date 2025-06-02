@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
+import TopBanner from './TopBanner';
 // <<<<<<< HEAD
-// import Logo from '../assets/Gover-nice Yellow-Logo.png';
 // =======
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
@@ -12,12 +12,14 @@ import 'react-native-url-polyfill/auto';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const Card = ({ title, description, buttonText }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>{title}</Text>
-    <Text style={styles.cardDesc}>{description}</Text>
-    <TouchableOpacity style={styles.cardButton}>
-      <Text style={styles.cardButtonText}>{buttonText}</Text>
+const Card = ({ title, description, buttonText, onPress, cardStyle, textStyle, buttonStyle, buttonTextStyle }) => (
+  <View style={[styles.card, cardStyle]}> 
+    <View style={styles.cardTextContainer}>
+      <Text style={[styles.cardTitle, textStyle]}>{title}</Text>
+      <Text style={[styles.cardDesc, textStyle]}>{description}</Text>
+    </View>
+    <TouchableOpacity style={[styles.cardButton, buttonStyle]} onPress={onPress}>
+      <Text style={[styles.cardButtonText, buttonTextStyle]}>{buttonText}</Text>
     </TouchableOpacity>
   </View>
 );
@@ -39,49 +41,89 @@ export default function HomePage() {
         <View style={[styles.section, styles.sectionBlue, { minHeight: SCREEN_HEIGHT }]}> 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Explore Gover-Know!</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/InfoPage')}><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
           </View>
           <View style={styles.cardColumn}>
-            <Card title="8 Principles" description="Learn about transparency." buttonText="View Topic" onPress={() => router.push('./LessonPages/8_Principles')} />
-            <Card title="Gover-Know 2" description="Discover accountability." buttonText="View Topic" />
+            <Card 
+              title="8 Principles" 
+              description="Principles to build Good Governance." 
+              buttonText="View Topic" 
+              onPress={() => router.push('./LessonPages/8_Principles')} 
+            />
+            <Card title="Good vs. Bad Governance" description="Discover accountability." buttonText="View Topic" />
           </View>
         </View>
         {/* 3rd Section: Quiz */}
         <View style={[styles.section, styles.sectionBlue, { minHeight: SCREEN_HEIGHT }]}> 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Want Challenge? Tara Quiz tayo!</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/QuizPage')}><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
           </View>
           <View style={styles.cardColumn}>
-            <Card title="Quiz 1" description="Test your knowledge!" buttonText="Start Quiz" />
-            <Card title="Quiz 2" description="Ready for more?" buttonText="Start Quiz" />
+            <Card 
+              title="Easy Quiz" 
+              description="8 Principles of Good Governance" 
+              buttonText="Start Quiz" 
+              onPress={() => router.push('./SlideQuizzes/PrinciplesOfGoodGovernance')}
+            />
+            <Card title="Intermediate Quiz" description="Good vs. Bad Governance" buttonText="Start Quiz" />
           </View>
         </View>
         {/* 4th Section: Pepits Bot */}
-        <View style={[styles.section, styles.sectionWhite, styles.pepitsSection, { minHeight: SCREEN_HEIGHT }]}> 
+        <View style={[styles.section, styles.sectionBlue, styles.pepitsSection, { minHeight: SCREEN_HEIGHT }]}> 
           <Text style={styles.sectionTitle}>Curious Ka? Si Pepits ang bahala sayo!</Text>
           <View style={styles.pepitsRow}>
             <Image source={{ uri: 'https://i.imgur.com/8Km9tLL.png' }} style={styles.pepitsImage} />
             <View style={styles.pepitsCloud}>
-              <Text style={styles.pepitsText}>Ask me anything about good governance!</Text>
-              <TouchableOpacity style={styles.pepitsButton}>
-                <Text style={styles.pepitsButtonText}>Talk Pepits</Text>
+              <Text style={styles.pepitsText}>Kamusta! Ako si Pepits.</Text>
+              <Text style={styles.pepitsText}>Kinagagalak kong makilala ka, Masaya rin ako na interesado ka din alamin kung ano ang Good Governance. Kausapin mo lang ako kung gusto mo pang maintindihan ng lubos ito.</Text>
+              <TouchableOpacity style={styles.pepitsButton} onPress={() => router.push('/chat')}>
+                <Text 
+                  style={styles.pepitsButtonText}>Talk Pepits
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
         {/* 5th Section: Panalo */}
-        <View style={[styles.section, styles.sectionBlue, { minHeight: SCREEN_HEIGHT }]}> 
+        <View style={[styles.section, styles.sectionWhite, { minHeight: SCREEN_HEIGHT }]}> 
+          {/* First part: Talagang Panalo Ka Dito! */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Talagang Panalo Ka Dito!</Text>
-            <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
+            <Text style={[styles.sectionTitle, styles.blueText]}>Talagang Panalo Ka Dito!</Text>
+            <TouchableOpacity onPress={() => router.push('/ProfilePage')}><Text style={[styles.seeAll, styles.blueText]}>See All</Text></TouchableOpacity>
           </View>
           <View style={styles.cardColumn}>
-            <Card title="Panalo 1" description="Get rewards for learning!" buttonText="View Rewards" />
-            <Card title="Panalo 2" description="Unlock achievements!" buttonText="View Rewards" />
+            <Card 
+              title="Earn 10,000 points!" 
+              description="Get rewards for learning!" 
+              buttonText="View Rewards" 
+              cardStyle={styles.blueCard}
+              textStyle={styles.blueCardText}
+              buttonStyle={styles.blueCardButton}
+              buttonTextStyle={styles.blueCardButtonText}
+              onPress={() => router.push('/ProfilePage')}
+            />
+          </View>
+          {/* Second part: More Points? Just Take a Quiz! */}
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, styles.blueText]}>More Points? Just Take a Quiz!</Text>
+            <TouchableOpacity onPress={() => router.push('/QuizPage')}><Text style={[styles.seeAll, styles.blueText]}>See All</Text></TouchableOpacity>
+          </View>
+          <View style={styles.cardColumn}>
+            <Card 
+              title="Take a Quiz!" 
+              description="Take quizzes and boost your points." 
+              buttonText="Take Quiz" 
+              cardStyle={styles.blueCard}
+              textStyle={styles.blueCardText}
+              buttonStyle={styles.blueCardButton}
+              buttonTextStyle={styles.blueCardButtonText}
+              onPress={() => router.push('/QuizPage')}
+            />
           </View>
         </View>
       </ScrollView>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -101,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0038A8',
   },
   sectionWhite: {
-    backgroundColor: '#fff',
+    backgroundColor: '#F0F0F0',
   },
   splashTitle: {
     fontSize: 48,
@@ -152,30 +194,55 @@ const styles = StyleSheet.create({
     padding: 16,
     marginVertical: 8,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cardTextContainer: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   cardTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 6,
+    textAlign: 'left',
   },
   cardDesc: {
     fontSize: 14,
     color: '#555',
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   cardButton: {
     backgroundColor: '#FCD116',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    marginLeft: 16,
+    alignSelf: 'center',
   },
   cardButtonText: {
     color: '#000',
     fontWeight: 'bold',
     fontSize: 14,
     padding: 3,
+  },
+  blueCard: {
+    backgroundColor: '#0038A8',
+  },
+  blueCardText: {
+    color: '#FFF',
+  },
+  blueCardButton: {
+    backgroundColor: '#FCD116',
+  },
+  blueCardButtonText: {
+    color: '#0038A8',
+  },
+  blueText: {
+    color: '#0038A8',
   },
   pepitsSection: {
     paddingBottom: 40,
@@ -208,14 +275,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pepitsButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#FCD116',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignSelf: 'flex-start',
   },
   pepitsButtonText: {
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     fontSize: 14,
   },

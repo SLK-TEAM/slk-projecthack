@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, TouchableOp
 import Icon from 'react-native-vector-icons/Feather';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavbar from '../BottomNavbar';
+import TopBanner from '../TopBanner';
 
 const QUESTIONS = [
   {
@@ -125,6 +126,7 @@ export default function PrinciplesOfGoodGovernance() {
           </Animated.View>
         )}
       </View>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -133,22 +135,23 @@ export default function PrinciplesOfGoodGovernance() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0038A8',
     alignItems: 'center',
     justifyContent: 'center',
   },
   card: {
     width: '90%',
-    minHeight: 320,
+    height: 400,
     borderRadius: 24,
-    padding: 32,
+    marginTop: 50,
+    padding: 30,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.10,
     shadowRadius: 12,
     elevation: 4,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   qNumber: {
     fontSize: 18,
