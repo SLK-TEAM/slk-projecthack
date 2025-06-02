@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import BottomNavbar from './BottomNavbar';
+import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
