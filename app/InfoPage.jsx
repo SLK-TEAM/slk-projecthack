@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
 
 const topics = [
+  {
+    key: 'GoodvsBad',
+    title: 'Good Governance vs Bad Governance',
+    genre: 'Value',
+    thumbnail: require('../assets/lesson_assets/Goodgovernance.png'),
+    description: 'Good governance refers to the fair, transparent, accountable, and effective management of public resources and affairs. It ensures that government actions serve the best interests of its people.',
+    lessonPage: '/LessonPages/GoodvsBad',
+  },
   {
     key: 'transparency',
     title: 'Transparency in Governance',
@@ -48,6 +56,7 @@ const topics = [
 
 export default function InfoPage() {
   const [expanded, setExpanded] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const router = useRouter();
 
   return (
@@ -57,7 +66,16 @@ export default function InfoPage() {
         {topics.map((topic, idx) => (
           <View key={topic.key} style={styles.card}>
             <TouchableOpacity onPress={() => setExpanded(expanded === idx ? null : idx)} activeOpacity={0.9}>
-              <Image source={{ uri: topic.thumbnail }} style={styles.thumbnail} />
+              <TouchableOpacity 
+                onPress={() => setSelectedImage(topic.thumbnail)}
+                activeOpacity={0.9}
+              >
+                <Image 
+                  source={typeof topic.thumbnail === 'string' ? { uri: topic.thumbnail } : topic.thumbnail}
+                  style={styles.thumbnail}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
               <View style={styles.cardContent}>
                 <Text style={styles.title}>{topic.title}</Text>
                 <Text style={styles.genre}>{topic.genre}</Text>
@@ -74,6 +92,27 @@ export default function InfoPage() {
           </View>
         ))}
       </ScrollView>
+
+      {/* Modal for full image view */}
+      <Modal
+        visible={selectedImage !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSelectedImage(null)}
+      >
+        <TouchableOpacity 
+          style={styles.modalContainer} 
+          activeOpacity={1} 
+          onPress={() => setSelectedImage(null)}
+        >
+          <Image 
+            source={selectedImage} 
+            style={styles.modalImage}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+      </Modal>
+
       <BottomNavbar />
     </View>
   );
@@ -101,7 +140,8 @@ const styles = StyleSheet.create({
   },
   thumbnail: {
     width: '100%',
-    height: 160,
+    height: 180
+  
   },
   cardContent: {
     padding: 14,
@@ -136,5 +176,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalImage: {
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.7,
   },
 }); 
