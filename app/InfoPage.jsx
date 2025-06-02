@@ -18,7 +18,7 @@ const topics = [
     genre: 'Principle',
     thumbnail: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
     description: 'Accountability means officials are answerable for their actions and decisions.',
-    lessonPage: '/LessonPages/LessonAccountability',
+    lessonPage: '/LessonPages/8_Principles',
   },
   {
     key: 'participation',

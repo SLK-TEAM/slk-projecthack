@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
+// import Logo from '../assets/Gover-nice Yellow-Logo.png';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -14,24 +16,28 @@ const Card = ({ title, description, buttonText }) => (
   </View>
 );
 
+const router = useRouter();
+
 export default function HomePage() {
   return (
     <View style={{flex: 1}}>
       <ScrollView style={styles.scroll} pagingEnabled showsVerticalScrollIndicator={false}>
         {/* 1st Section: Splash */}
         <View style={[styles.section, styles.sectionBlue, { minHeight: SCREEN_HEIGHT }]}> 
+          {/* <Image source={Logo} style={styles.logo} /> */}
           <Text style={styles.splashTitle}>Pagbati!</Text>
-          <Text style={styles.splashSubtitle}>Halina't alamin ang Good Governance!</Text>
+          <Text style={styles.splashSubtitle1}>"Tapat na pamahalaan, maunlad na bayan"</Text>
+          <Text style={styles.splashSubtitle2}>#Good Governance</Text>
         </View>
         {/* 2nd Section: Explore Gover-Know! */}
-        <View style={[styles.section, styles.sectionWhite, { minHeight: SCREEN_HEIGHT }]}> 
+        <View style={[styles.section, styles.sectionBlue, { minHeight: SCREEN_HEIGHT }]}> 
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Explore Gover-Know!</Text>
             <TouchableOpacity><Text style={styles.seeAll}>See All</Text></TouchableOpacity>
           </View>
           <View style={styles.cardColumn}>
-            <Card title="Gover-Know 1" description="Learn about transparency." buttonText="Learn More" />
-            <Card title="Gover-Know 2" description="Discover accountability." buttonText="Learn More" />
+            <Card title="8 Principles" description="Learn about transparency." buttonText="View Topic" onPress={() => router.push('./LessonPages/8_Principles')} />
+            <Card title="Gover-Know 2" description="Discover accountability." buttonText="View Topic" />
           </View>
         </View>
         {/* 3rd Section: Quiz */}
@@ -86,22 +92,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sectionBlue: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#0038A8',
   },
   sectionWhite: {
     backgroundColor: '#fff',
   },
   splashTitle: {
-    fontSize: 32,
+    fontSize: 48,
     fontWeight: 'bold',
     color: '#fff',
-    textAlign: 'center',
-    marginBottom: 8,
+    textAlign: 'left',
+    padding: 8,
+    marginBottom: 20,
   },
-  splashSubtitle: {
-    fontSize: 18,
+  splashSubtitle1: {
+    fontSize: 26,
     color: '#fff',
     textAlign: 'center',
+    fontStyle: 'italic',
+    marginBottom: 20,
+  },
+  splashSubtitle2: {
+    margin: 15,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#FCD116',
+    textAlign: 'right',
+    fontStyle: 'bold',
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -110,21 +127,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#fff',
   },
   seeAll: {
-    color: '#6c63ff',
+    color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 12,
   },
   cardColumn: {
     flexDirection: 'column',
     gap: 16,
   },
   card: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     marginVertical: 8,
@@ -143,15 +160,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cardButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#FCD116',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   cardButtonText: {
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     fontSize: 14,
+    padding: 3,
   },
   pepitsSection: {
     paddingBottom: 40,
