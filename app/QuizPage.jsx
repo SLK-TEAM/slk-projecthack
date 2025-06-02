@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import BottomNavbar from './BottomNavbar';
 import { useRouter } from 'expo-router';
+import TopBanner from './TopBanner';
 
 const QUIZZES = [
   {
-    title: 'Principles of Good Governance',
+    title: '8 Principles of Good Governance',
     questions: 10,
     difficulty: 'Easy',
     description: 'Test your knowledge on the core principles and values of good governance.',
@@ -36,13 +37,47 @@ const QUIZZES = [
   },
 ];
 
+function getDifficultyStyle(difficulty) {
+  if (difficulty === 'Easy') {
+    return {
+      borderColor: '#00FF7F',
+      backgroundColor: 'rgba(0,255,127,0.10)',
+    };
+  } else if (difficulty === 'Medium') {
+    return {
+      borderColor: '#FFD600',
+      backgroundColor: 'rgba(255,214,0,0.10)',
+    };
+  } else if (difficulty === 'Hard') {
+    return {
+      borderColor: '#FF1744',
+      backgroundColor: 'rgba(255,23,68,0.10)',
+    };
+  }
+  return {};
+}
+
 export default function QuizPage() {
   const [expanded, setExpanded] = useState(-1);
   const router = useRouter();
+  const taraAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (expanded !== -1) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(taraAnim, { toValue: 1.05, duration: 800, useNativeDriver: true }),
+          Animated.timing(taraAnim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      taraAnim.setValue(1);
+    }
+  }, [expanded]);
 
   return (
     <View style={{flex: 1}}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.header}>Choose a Quiz</Text>
         {QUIZZES.map((quiz, idx) => (
           <TouchableOpacity
@@ -56,21 +91,24 @@ export default function QuizPage() {
                 <Text style={styles.quizTitle}>{quiz.title}</Text>
                 <Text style={styles.quizQuestions}>{quiz.questions} Questions</Text>
               </View>
-              <View style={styles.difficultyBox}>
-                <Text style={styles.difficultyText}>{quiz.difficulty}</Text>
+              <View style={[styles.difficultyBox, getDifficultyStyle(quiz.difficulty)]}>
+                <Text style={[styles.difficultyText, { color: getDifficultyStyle(quiz.difficulty).borderColor }]}>{quiz.difficulty}</Text>
               </View>
             </View>
             {expanded === idx && (
               <Animated.View style={styles.expandedContent}>
                 <Text style={styles.quizDesc}>{quiz.description}</Text>
-                <TouchableOpacity style={styles.taraButton} onPress={() => router.push('/SlideQuizzes/PrinciplesOfGoodGovernance')}>
-                  <Text style={styles.taraButtonText}>Tara!</Text>
-                </TouchableOpacity>
+                <Animated.View style={{ transform: [{ scale: taraAnim }] }}>
+                  <TouchableOpacity style={styles.taraButton} onPress={() => router.push('/SlideQuizzes/PrinciplesOfGoodGovernance')}>
+                    <Text style={styles.taraButtonText}>Tara!</Text>
+                  </TouchableOpacity>
+                </Animated.View>
               </Animated.View>
             )}
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -78,15 +116,15 @@ export default function QuizPage() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: 40,
+    padding: 50,
+    paddingTop: 190,
     paddingHorizontal: 18,
     backgroundColor: '#f5f5f5',
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#222',
     marginBottom: 24,
     textAlign: 'center',
   },
@@ -101,7 +139,6 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: 1,
     borderColor: '#ececec',
-    transition: 'all 0.2s',
   },
   cardExpanded: {
     backgroundColor: '#e6eaff',
@@ -115,7 +152,7 @@ const styles = StyleSheet.create({
   quizTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#222',
     marginBottom: 4,
   },
   quizQuestions: {
@@ -123,16 +160,15 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   difficultyBox: {
-    backgroundColor: '#6c63ff',
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 14,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 10,
+    borderWidth: 2,
   },
   difficultyText: {
-    color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
   },
@@ -142,20 +178,25 @@ const styles = StyleSheet.create({
   },
   quizDesc: {
     fontSize: 15,
-    color: '#444',
+    color: '#222',
     marginBottom: 12,
   },
   taraButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#0038A8',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 24,
     alignItems: 'center',
     alignSelf: 'flex-end',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 2,
   },
   taraButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+    letterSpacing: 1,
   },
 }); 
