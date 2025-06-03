@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Modal, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
 import TopBanner from './TopBanner';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const topics = [
   {
@@ -14,20 +15,20 @@ const topics = [
     lessonPage: '/LessonPages/GoodvsBad',
   },
   {
-    key: 'transparency',
-    title: 'Transparency in Governance',
-    genre: 'Principle',
-    thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
-    description: 'Transparency ensures that government actions are open and accessible to the public.',
-    lessonPage: '/LessonPages/LessonTransparency',
-  },
-  {
     key: 'accountability',
     title: '8 Principles of Good Governance',
     genre: 'Principle',
     thumbnail: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
     description: 'Accountability means officials are answerable for their actions and decisions.',
     lessonPage: '/LessonPages/8_Principles',
+  },
+  {
+    key: 'transparency',
+    title: 'Transparency in Governance',
+    genre: 'Principle',
+    thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80',
+    description: 'Transparency ensures that government actions are open and accessible to the public.',
+    lessonPage: '/LessonPages/LessonTransparency',
   },
   {
     key: 'participation',
@@ -58,7 +59,25 @@ const topics = [
 export default function InfoPage() {
   const [expanded, setExpanded] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [accountabilityStatus, setAccountabilityStatus] = useState('Not Completed');
+  const [goodvsbadStatus, setGoodvsbadStatus] = useState('Not Completed');
   const router = useRouter();
+
+  useEffect(() => {
+    // Load status from AsyncStorage
+    const loadStatus = async () => {
+      try {
+        const status = await AsyncStorage.getItem('status_accountability');
+        if (status) setAccountabilityStatus(status);
+        const status2 = await AsyncStorage.getItem('status_goodvsbad');
+        if (status2) setGoodvsbadStatus(status2);
+      } catch (e) {}
+    };
+    loadStatus();
+    // Listen to focus event to refresh status
+    const unsubscribe = router.addListener?.('focus', loadStatus);
+    return unsubscribe;
+  }, [router]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -81,6 +100,15 @@ export default function InfoPage() {
               <View style={styles.cardContent}>
                 <Text style={styles.title}>{topic.title}</Text>
                 <Text style={styles.genre}>{topic.genre}</Text>
+                <View style={styles.statusRow}>
+                  <Text style={styles.statusLabel}>Status: </Text>
+                  <Text style={[styles.statusValue, 
+                    topic.key === 'accountability' && accountabilityStatus === 'Mark as Completed' ? { color: '#2ecc40' } : null,
+                    topic.key === 'GoodvsBad' && goodvsbadStatus === 'Mark as Completed' ? { color: '#2ecc40' } : null
+                  ]}>
+                    {topic.key === 'accountability' ? accountabilityStatus : topic.key === 'GoodvsBad' ? goodvsbadStatus : 'Not Completed'}
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
             {expanded === idx && (
@@ -124,11 +152,12 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     paddingTop: 180,
+    paddingBottom: 50,
   },
   pageTitle: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#000',
     marginBottom: 18,
     marginTop: 8,
     textAlign: 'center',
@@ -155,7 +184,7 @@ const styles = StyleSheet.create({
   },
   genre: {
     fontSize: 13,
-    color: '#6c63ff',
+    color: '#0038A8',
     marginBottom: 2,
   },
   expandedContent: {
@@ -168,7 +197,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   readButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#0038A8',
     borderRadius: 8,
     paddingVertical: 10,
     alignItems: 'center',
@@ -187,5 +216,21 @@ const styles = StyleSheet.create({
   modalImage: {
     width: Dimensions.get('window').width * 0.9,
     height: Dimensions.get('window').height * 0.7,
-  }, 
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  statusLabel: {
+    fontSize: 13,
+    color: '#888',
+    fontWeight: 'bold',
+  },
+  statusValue: {
+    fontSize: 13,
+    color: '#F44336',
+    fontWeight: 'bold',
+    marginLeft: 2,
+  },
 }); 

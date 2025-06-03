@@ -1,9 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Linking, TouchableOpacity, ScrollView, Image, Animated, Modal, Dimensions } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import BottomNavbar from '../BottomNavbar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const IMAGE_URL = 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80';
-const BOOKSHELVES_IMAGE = require('../../assets/Governice_bg.png');
+const BOOKSHELVES_IMAGE = require('../../assets/lesson_assets/Goodgovernance.png');
 const MEME_IMAGE = require('../../assets/lesson_assets/Goodgovernance.png'); // Placeholder, update path as needed
 const LENI_IMAGE = require('../../assets/Leni_Robredo.png'); // Placeholder, update path as needed
 const HONTI_IMAGE = require('../../assets/Risa_Hontiveros.jpg'); // Placeholder, update path as needed
@@ -18,16 +21,41 @@ const LINKS = [
 export default function LessonAccountability() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [selectedImage, setSelectedImage] = useState(null);
+  const [status, setStatus] = useState('Not Completed');
+  const [showCongrats, setShowCongrats] = useState(false);
   const imageOpacity = scrollY.interpolate({
     inputRange: [0, 120],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
+  useEffect(() => {
+    const loadStatus = async () => {
+      try {
+        const saved = await AsyncStorage.getItem('status_goodvsbad');
+        if (saved) setStatus(saved);
+      } catch (e) {}
+    };
+    loadStatus();
+  }, []);
+
+  const handleStatusChange = async (value) => {
+    setStatus(value);
+    if (value === 'Mark as Completed') {
+      await AsyncStorage.setItem('status_goodvsbad', 'Mark as Completed');
+      setStatus('Mark as Completed');
+      setShowCongrats(true);
+    } else {
+      await AsyncStorage.setItem('status_goodvsbad', value);
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
-      {/* Section 0: Bookshelves Image with Fade */}
-      <Animated.Image source={BOOKSHELVES_IMAGE} style={[styles.topImage, { opacity: imageOpacity }]} />
+      {/* Section 0: Bookshelves Image with Fade (clickable) */}
+      <TouchableOpacity onPress={() => setSelectedImage(BOOKSHELVES_IMAGE)} activeOpacity={0.9}>
+        <Animated.Image source={BOOKSHELVES_IMAGE} style={[styles.topImage, { opacity: imageOpacity }]} />
+      </TouchableOpacity>
       <Animated.ScrollView
         contentContainerStyle={styles.container}
         scrollEventThrottle={16}
@@ -35,10 +63,24 @@ export default function LessonAccountability() {
           { nativeEvent: { contentOffset: { y: scrollY } } },
         ], { useNativeDriver: false })}
       >
-        {/* Section 1: Title */}
+        {/* Section 1: Title + Status Dropdown */}
         <View style={styles.sectionBox}>
           <Text style={styles.Semititle}>Gover-know Topic</Text>
           <Text style={styles.title}>Good and Bad Governance</Text>
+          <View style={styles.statusSelectorContainer}>
+            <Text style={styles.statusSelectorLabel}>Status:</Text>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={status}
+                onValueChange={handleStatusChange}
+                style={styles.statusPicker}
+                mode="dropdown"
+              >
+                <Picker.Item label="Not Completed" value="Not Completed" />
+                <Picker.Item label="Mark as Completed" value="Mark as Completed" />
+              </Picker>
+            </View>
+          </View>
         </View>
         {/* Section 2: Summary */}
         <View style={styles.sectionBox}>
@@ -50,15 +92,16 @@ export default function LessonAccountability() {
          Sa salungat na konteksto, ang bad governance ay tumutukoy sa hindi maayos, hindi makatarungan, o korap na pamamahala ng pampublikong tungkulin at yaman. Kapag an glider o institusyon ay nagpapabaya sa kapakanan ng publiko, nag reresulta ito ng kawalan ng transparency, accountability, at partisipasyon ng mamamayan, at pag-sunod sa batas.
           </Text>
         </View>
-        {/* Section 3: Background */}
+        {/* Section 3: Background (clickable meme) */}
         <View style={styles.sectionBox}>
-          
-          <Image source={MEME_IMAGE} style={styles.memeImage} resizeMode="contain" />
+          <TouchableOpacity onPress={() => setSelectedImage(MEME_IMAGE)} activeOpacity={0.9}>
+            <Image source={MEME_IMAGE} style={styles.memeImage} resizeMode="contain" />
+          </TouchableOpacity>
         </View>
-        {/* Section 5: People */}
+        {/* Section 5: People (images clickable) */}
         <View style={styles.sectionBox}>
           <View style={styles.personCard}>
-            <TouchableOpacity onPress={() => setSelectedImage(LENI_IMAGE)}>
+            <TouchableOpacity onPress={() => setSelectedImage(LENI_IMAGE)} activeOpacity={0.9}>
               <Image source={LENI_IMAGE} style={styles.personImage} resizeMode="cover" />
             </TouchableOpacity>
             <Text style={styles.personName}>Leni Robredo</Text>
@@ -68,7 +111,7 @@ export default function LessonAccountability() {
             </Text>
           </View>
           <View style={styles.personCard}>
-            <TouchableOpacity onPress={() => setSelectedImage(HONTI_IMAGE)}>
+            <TouchableOpacity onPress={() => setSelectedImage(HONTI_IMAGE)} activeOpacity={0.9}>
               <Image source={HONTI_IMAGE} style={styles.personImage} resizeMode="cover" />
             </TouchableOpacity>
             <Text style={styles.personName}>Risa Hontiveros</Text>
@@ -78,7 +121,7 @@ export default function LessonAccountability() {
             </Text>
           </View>
           <View style={styles.personCard}>
-            <TouchableOpacity onPress={() => setSelectedImage(VICO_IMAGE)}>
+            <TouchableOpacity onPress={() => setSelectedImage(VICO_IMAGE)} activeOpacity={0.9}>
               <Image source={VICO_IMAGE} style={styles.personImage} resizeMode="cover" />
             </TouchableOpacity>
             <Text style={styles.personName}>Vico Sotto </Text>
@@ -88,8 +131,8 @@ export default function LessonAccountability() {
             </Text>
           </View>   
         </View>
-        {/* Section 6: Links */}
-        {/* <View style={styles.sectionBox}>
+        {/* Section 6: Useful Links */}
+        <View style={styles.sectionBox}>
           <Text style={styles.sectionTitle}>Useful Links</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginTop: 8}}>
             {LINKS.map((link, idx) => (
@@ -100,11 +143,10 @@ export default function LessonAccountability() {
               </TouchableOpacity>
             ))}
           </ScrollView>
-        </View> */}
+        </View>
       </Animated.ScrollView>
       <BottomNavbar />
-
-      {/* Add Modal for full image view */}
+      {/* Image Modal */}
       <Modal
         visible={selectedImage !== null}
         transparent={true}
@@ -121,6 +163,15 @@ export default function LessonAccountability() {
             style={styles.modalImage}
             resizeMode="contain"
           />
+        </TouchableOpacity>
+      </Modal>
+      {/* Congrats Modal */}
+      <Modal visible={showCongrats} transparent animationType="fade" onRequestClose={() => setShowCongrats(false)}>
+        <TouchableOpacity style={styles.confettiModal} activeOpacity={1} onPress={() => setShowCongrats(false)}>
+          <View style={styles.congratsBox}>
+            <Text style={styles.congratsText}>🎉 Congratulations! 🎉{"\n"}You marked this Lesson as Completed!</Text>
+            <Text style={styles.congratsHint}>(Tap anywhere to close)</Text>
+          </View>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -306,12 +357,77 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   modalImage: {
-    width: Dimensions.get('window').width * 0.9,
-    height: Dimensions.get('window').height * 0.7,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
+  },
+  statusSelectorContainer: {
+    marginTop: 16,
+    marginBottom: 8,
+    backgroundColor: '#f0f4ff',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'flex-start',
+  },
+  statusSelectorLabel: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#0038A8',
+    marginBottom: 4,
+  },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#0038A8',
+    borderRadius: 6,
+    overflow: 'hidden',
+    width: 200,
+    height: 55,
+    right: 0,
+  },
+  statusPicker: {
+    height: 55,
+    color: '#0038A8',
+    backgroundColor: '#fff',
+    width: '100%',
+  },
+  confettiModal: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  congratsBox: {
+    position: 'absolute',
+    top: Dimensions.get('window').height / 2 - 80,
+    left: 32,
+    right: 32,
+    backgroundColor: '#fff',
+    borderColor: '#0038A8',
+    borderWidth: 5,
+    borderRadius: 18,
+    padding: 28,
+    alignItems: 'center',
+    elevation: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  congratsText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  congratsHint: {
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
   },
 }); 

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
+import TopBanner from './TopBanner';
 
 export default function QuizScore() {
   const router = useRouter();
@@ -14,10 +15,11 @@ export default function QuizScore() {
         <Text style={styles.title}>Quiz Complete!</Text>
         <Text style={styles.scoreText}>You got {numericScore} out of {numericTotal} correct.</Text>
         <Text style={styles.message}>{numericScore >= 7 ? 'Great job! You know your governance.' : 'Keep learning and try again!'}</Text>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('/HomePage')}>
-          <Text style={styles.buttonText}>Back to Home</Text>
+        <TouchableOpacity style={styles.button} onPress={() => router.push('/QuizPage')}>
+          <Text style={styles.buttonText}>Back to Quiz Page</Text>
         </TouchableOpacity>
       </View>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -28,35 +30,36 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0038A8',
     paddingHorizontal: 24,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#fff',
     marginBottom: 18,
   },
   scoreText: {
     fontSize: 20,
-    color: '#222',
+    color: '#FCD116',
     marginBottom: 10,
+    fontWeight: 'bold',
   },
   message: {
     fontSize: 16,
-    color: '#444',
+    color: '#FCD116',
     marginBottom: 30,
     textAlign: 'center',
   },
   button: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#FCD116',
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 32,
     alignItems: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
   },

@@ -1,9 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Animated, PanResponder, Dimensions, TouchableOpacity, Image, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import BottomNavbar from '../BottomNavbar';
 import TopBanner from '../TopBanner';
+import quizIntroImg from '../../assets/pnglogo.png';
 
 const QUESTIONS = [
   {
@@ -53,6 +54,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 export default function PrinciplesOfGoodGovernance() {
   const [current, setCurrent] = useState(0);
   const [score, setScore] = useState(0);
+  const [showInstructions, setShowInstructions] = useState(true);
   const position = useRef(new Animated.ValueXY()).current;
   const router = useRouter();
 
@@ -99,14 +101,31 @@ export default function PrinciplesOfGoodGovernance() {
 
   const bgColor = position.x.interpolate({
     inputRange: [-SCREEN_WIDTH, 0, SCREEN_WIDTH],
-    outputRange: ['#ffdddd', '#fff', '#ddffdd'],
+    outputRange: ['#ff4d4d', '#fff', '#68de68'],
     extrapolate: 'clamp',
   });
 
   return (
     <View style={{ flex: 1 }}>
+      <Modal visible={showInstructions} transparent animationType="fade">
+        <View style={styles.instructionModalBg}>
+          <View style={styles.instructionModalBox}>
+            <Text style={styles.instructionTitle}>Quiz: Principles of Good Governance</Text>
+            <Image source={quizIntroImg} style={styles.instructionImage} resizeMode="contain" />
+            <Text style={styles.instructionText}>
+              Swipe right for Good Governance, swipe left for Bad Governance. Or tap the buttons below each scenario. 
+            </Text>
+            <Text style={styles.instructionText}>
+              Try to get the highest score!
+            </Text>
+            <TouchableOpacity style={styles.instructionBtn} onPress={() => setShowInstructions(false)}>
+              <Text style={styles.instructionBtnText}>Tara! Game!</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.container}>
-        {current < QUESTIONS.length && (
+        {current < QUESTIONS.length && !showInstructions && (
           <Animated.View
             {...panResponder.panHandlers}
             style={[styles.card, { backgroundColor: bgColor, transform: [{ translateX: position.x }] }]}
@@ -155,13 +174,13 @@ const styles = StyleSheet.create({
   },
   qNumber: {
     fontSize: 18,
-    color: '#6c63ff',
+    color: '#000',
     fontWeight: 'bold',
     marginBottom: 18,
   },
   question: {
     fontSize: 20,
-    color: '#222',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 36,
     fontWeight: '500',
@@ -187,5 +206,50 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: '#444',
+  },
+  instructionModalBg: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  instructionModalBox: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 18,
+    borderWidth: 3,
+    borderColor: '#b39309',
+    padding: 28,
+    alignItems: 'center',
+    width: '85%',
+    elevation: 8,
+  },
+  instructionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#0038A8',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  instructionImage: {
+    width: 180,
+    height: 120,
+    marginBottom: 18,
+  },
+  instructionText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 22,
+  },
+  instructionBtn: {
+    backgroundColor: '#FCD116',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+  },
+  instructionBtnText: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 17,
   },
 }); 

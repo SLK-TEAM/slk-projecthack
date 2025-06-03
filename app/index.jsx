@@ -1,57 +1,86 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import Logo from '../assets/adaptive-icon.png';
+import Logo from '../assets/pnglogo.png';
+import LoadingScreen from './LoadingScreen';
 
 export default function SplashPage() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showLoading, setShowLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [inputHint, setInputHint] = useState('');
   const router = useRouter();
+
+  const handleLogin = () => {
+    setUsernameError('');
+    setPasswordError('');
+    setInputHint('');
+    let hasError = false;
+    if (!username || !password) {
+      setInputHint('Please type your username and password.');
+      hasError = true;
+    } else {
+      if (username !== 'juanDcruz') {
+        setUsernameError("Your username doesn't exist");
+        hasError = true;
+      }
+      if (username === 'juanDcruz' && password !== '1delax@') {
+        setPasswordError('You typed a wrong password.');
+        hasError = true;
+      }
+    }
+    if (!hasError) {
+      setShowLoading(true);
+      setTimeout(() => {
+        setShowLoading(false);
+        router.push('/HomePage');
+      }, 1000);
+    }
+  };
+
+  if (showLoading) {
+    return <LoadingScreen message="Welcome to Gover-Nice!" onFinish={() => router.push('/HomePage')} />;
+  }
 
   return (
     <View style={styles.container}>
       {/* Question Mark Button */}
       <View style={styles.topRight}>
-        <TouchableOpacity onPress={() => setShowDropdown(!showDropdown)} style={styles.questionButton}>
+        <TouchableOpacity onPress={() => router.push('/About')} style={styles.questionButton}>
           <Text style={styles.questionMark}>?</Text>
         </TouchableOpacity>
-        {showDropdown && (
-          <View style={styles.dropdown}>
-            <Pressable onPress={() => setShowDropdown(false)}><Text style={styles.dropdownItem}>Overview</Text></Pressable>
-            <Pressable onPress={() => setShowDropdown(false)}><Text style={styles.dropdownItem}>FAQs</Text></Pressable>
-            <Pressable onPress={() => setShowDropdown(false)}><Text style={styles.dropdownItem}>Support Us</Text></Pressable>
-          </View>
-        )}
       </View>
       {/* Logo and Title */}
       <Image source={Logo} style={styles.logo} />
-      <Text style={styles.title}>GoverNice</Text>
       {/* Login Form */}
       <View style={styles.form}>
+        <Text style={styles.inputLabel}>Username</Text>
         <TextInput
-          style={styles.input}
-          placeholder="Username"
+          style={[styles.input, usernameError ? styles.inputError : null]}
+          placeholder="Type your username"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={text => { setUsername(text); setUsernameError(''); setInputHint(''); }}
           autoCapitalize="none"
         />
+        {usernameError ? <Text style={styles.errorText}>{usernameError}</Text> : null}
+        <Text style={styles.inputLabel}>Password</Text>
         <TextInput
-          style={styles.input}
-          placeholder="Password"
+          style={[styles.input, passwordError ? styles.inputError : null]}
+          placeholder="Type your password"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={text => { setPassword(text); setPasswordError(''); setInputHint(''); }}
           secureTextEntry
         />
-        <TouchableOpacity style={styles.loginButton}>
+        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+        {inputHint ? <Text style={styles.hintText}>{inputHint}</Text> : null}
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.createAccountButton} onPress={() => router.push('/CreateAccount')}>
           <Text style={styles.createAccountText}>Create Account</Text>
-        </TouchableOpacity>
-        {/* Bypass Button */}
-        <TouchableOpacity style={styles.bypassButton} onPress={() => router.push('/HomePage')}>
-          <Text style={styles.bypassButtonText}>Bypass Here Dev-sama-senpai-kun! &gt;.&lt;</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -61,7 +90,7 @@ export default function SplashPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0038A8',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -89,41 +118,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
   },
-  dropdown: {
-    marginTop: 8,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
-    minWidth: 120,
-  },
-  dropdownItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: '#333',
-  },
   logo: {
-    width: 100,
-    height: 100,
+    width: 300,
+    height: 300,
     marginBottom: 16,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#6c63ff',
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#6c63ff',
-    marginBottom: 32,
+    resizeMode: 'contain',
+    marginBottom: 100,
   },
   form: {
     width: '80%',
     alignItems: 'center',
+    top: -150,
+  },
+  inputLabel: {
+    alignSelf: 'flex-start',
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 4,
+    marginTop: 10,
   },
   input: {
     width: '100%',
@@ -132,20 +145,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
-    marginBottom: 16,
+    marginBottom: 8,
     backgroundColor: '#fff',
     fontSize: 16,
   },
+  inputError: {
+    borderColor: '#ff4444',
+    borderWidth: 2,
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 14,
+    alignSelf: 'flex-start',
+    marginBottom: 2,
+    marginLeft: 2,
+  },
+  hintText: {
+    color: '#FCD116',
+    fontSize: 14,
+    alignSelf: 'flex-start',
+    marginBottom: 6,
+    marginLeft: 2,
+  },
   loginButton: {
-    width: '100%',
-    backgroundColor: '#6c63ff',
+    width: '50%',
+    backgroundColor: '#FCD116',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 12,
+    marginTop: 8,
   },
   loginButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -155,21 +187,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   createAccountText: {
-    color: '#6c63ff',
+    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  bypassButton: {
-    width: '100%',
-    alignItems: 'center',
-    paddingVertical: 10,
-    marginTop: 8,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 8,
-  },
-  bypassButtonText: {
-    color: '#333',
-    fontSize: 14,
     fontWeight: 'bold',
   },
 });

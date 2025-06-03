@@ -5,6 +5,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
 import {
   TextInput as PaperTextInput,
@@ -15,7 +17,7 @@ import {
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { ScrollView as ScrollViewType } from 'react-native';
-import BottomNavbar from './BottomNavbar';
+import { useRouter } from 'expo-router';
 
 const GEMINI_API_KEY = 'AIzaSyA5jWOa-JeoyGVPUGvpIb_aSRoDqmq8iUU';
 
@@ -34,6 +36,7 @@ export default function ChatScreen() {
   const [language, setLanguage] = useState<'en' | 'tl'>('en');
 
   const scrollViewRef = useRef<ScrollViewType>(null);
+  const router = useRouter();
 
   useEffect(() => {
     loadChatHistory();
@@ -141,17 +144,27 @@ export default function ChatScreen() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#f5f5f5', }}>
+      {/* Banner Header */}
+      <View style={styles.banner}>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Image source={require('../assets/left-arrow.png')} style={styles.backIcon} />
+        </TouchableOpacity>
+        <Image source={require('../assets/chat-bot.png')} style={styles.pepitsIcon} />
+        <Text style={styles.pepitsText}>Pepits</Text>
+        <View style={styles.languageToggleContainer}>
+          <TouchableOpacity style={styles.languageButton} onPress={toggleLanguage}>
+            <Text style={styles.languageButtonText}>
+              Language: {language === 'en' ? 'English' : 'Tagalog'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <View style={styles.languageToggleContainer}>
-          <Button mode="outlined" onPress={toggleLanguage}>
-            Language: {language === 'en' ? 'English' : 'Tagalog'}
-          </Button>
-        </View>
         <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
@@ -160,27 +173,39 @@ export default function ChatScreen() {
           }
         >
           {messages.map((message, index) => (
-            <Surface
-              key={index}
-              style={[
-                styles.messageBubble,
-                message.isUser ? styles.userMessage : styles.botMessage,
-              ]}
-              elevation={1}
-            >
-              <Text style={styles.messageText}>{message.text}</Text>
-              <Text style={styles.timestamp}>
-                {message.timestamp.toLocaleTimeString()}
-              </Text>
-            </Surface>
+            message.isUser ? (
+              <Surface
+                key={index}
+                style={[
+                  styles.messageBubble,
+                  styles.userMessage,
+                ]}
+                elevation={1}
+              >
+                <Text style={styles.messageText}>{message.text}</Text>
+                <Text style={styles.timestamp}>
+                  {message.timestamp.toLocaleTimeString()}
+                </Text>
+              </Surface>
+            ) : (
+              <View key={index} style={styles.botMsgRow}>
+                <Image source={require('../assets/chat-bot.png')} style={styles.pepitsAvatar} />
+                <Surface
+                  style={[
+                    styles.messageBubble,
+                    styles.botMessage,
+                  ]}
+                  elevation={1}
+                >
+                  <Text style={styles.messageText}>{message.text}</Text>
+                  <Text style={styles.timestamp}>
+                    {message.timestamp.toLocaleTimeString()}
+                  </Text>
+                </Surface>
+              </View>
+            )
           ))}
         </ScrollView>
-      </KeyboardAvoidingView>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
         <View style={styles.inputContainer}>
           <PaperTextInput
             style={styles.input}
@@ -190,73 +215,155 @@ export default function ChatScreen() {
             multiline
             disabled={isLoading}
           />
-          <Button
-            mode="contained"
+          <TouchableOpacity
             onPress={handleSend}
             disabled={isLoading || !inputText.trim()}
-            loading={isLoading}
-            style={styles.sendButton}
+            style={styles.sendButtonIcon}
           >
-            Send
-          </Button>
+            <Image source={require('../assets/paper-plane.png')} style={styles.paperPlaneIcon} />
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-      <BottomNavbar />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0038A8',
+    paddingTop: 32,
+    paddingBottom: 32,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#0038A8',
+    zIndex: 10,
+  },
+  backButton: {
+    marginRight: 10,
+    padding: 4,
+  },
+  backIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+    tintColor: '#fff',
+  },
+  pepitsIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 18,
+    marginRight: 8,
+    marginLeft: 10,
+    backgroundColor: '#fff',
+    resizeMode: 'contain',
+  },
+  pepitsText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginRight: 8,
+  },
+  languageToggleContainer: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    alignItems: 'flex-end',
+  },
+  languageButton: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+  },
+  languageButtonText: {
+    color: '#222',
+    fontWeight: 'bold',
+    fontSize: 15,
   },
   messagesContainer: {
     flex: 1,
     padding: 16,
+  },
+  botMsgRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
+  pepitsAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 6,
+    marginTop: 6,
+    backgroundColor: '#fff',
+    resizeMode: 'contain',
   },
   messageBubble: {
     padding: 12,
     borderRadius: 16,
     marginVertical: 4,
     maxWidth: '80%',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFF',
+    borderColor: '#0038A8',
+    borderWidth: 2,
   },
   botMessage: {
     alignSelf: 'flex-start',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#ecf075',
+    borderColor: '#0038A8',
+    borderWidth: 2,
+  },
+  pepitsMsgIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    marginRight: 8,
+    backgroundColor: '#fff',
+    resizeMode: 'contain',
   },
   messageText: {
     fontSize: 16,
     color: '#000000',
+    flexShrink: 1,
   },
   timestamp: {
     fontSize: 12,
     color: '#666666',
     marginTop: 4,
+    marginLeft: 10,
     alignSelf: 'flex-end',
   },
   inputContainer: {
     flexDirection: 'row',
     padding: 16,
+    paddingBottom: 30,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
-    paddingBottom: 80,
   },
   input: {
     flex: 1,
     marginRight: 8,
     backgroundColor: '#FFFFFF',
   },
-  sendButton: {
+  sendButtonIcon: {
     justifyContent: 'center',
-  },
-  languageToggleContainer: {
-    padding: 8,
     alignItems: 'center',
+    padding: 8,
+    backgroundColor: '#0038A8',
+    borderRadius: 8,
+    height: 48,
+    width: 48,
+  },
+  paperPlaneIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    tintColor: '#fff',
   },
 });

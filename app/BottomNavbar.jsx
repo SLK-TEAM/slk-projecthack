@@ -1,29 +1,72 @@
-import React from 'react';
-import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useRef, useEffect } from 'react';
+import { View, TouchableOpacity, Image, StyleSheet, Animated } from 'react-native';
+import { useRouter, usePathname } from 'expo-router';
 
+const NAV_ITEMS = [
+  { route: '/HomePage', icon: require('../assets/home.png'), style: 'iconhome' },
+  { route: '/InfoPage', icon: require('../assets/open-book.png'), style: 'iconbook' },
+  { route: '/chat', icon: require('../assets/chat-bot.png'), style: 'botIcon', isBot: true },
+  { route: '/QuizPage', icon: require('../assets/qna.png'), style: 'iconquiz' },
+  { route: '/ProfilePage', icon: require('../assets/account.png'), style: 'iconprofile' },
+];
 
 export default function BottomNavbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
+  // Animated values for each nav item
+  const anims = useRef(NAV_ITEMS.map(() => new Animated.Value(0))).current;
+
+  useEffect(() => {
+    NAV_ITEMS.forEach((item, idx) => {
+      const isActive = pathname === item.route;
+      Animated.timing(anims[idx], {
+        toValue: isActive ? 1 : 0,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    });
+  }, [pathname]);
 
   return (
     <View style={[styles.navbar]}>
-      <TouchableOpacity style={styles.navItem} onPress={() => router.push('/HomePage')}>
-        <Image source={require('../assets/home.png')} style={styles.iconhome} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem} onPress={() => router.push('/InfoPage')}>
-        <Image source={require('../assets/open-book.png')} style={styles.iconbook} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.botButton} onPress={() => router.push('/chat')}>
-        <Image source={require('../assets/chat-bot.png')} style={styles.botIcon} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem} onPress={() => router.push('/QuizPage')}>
-        <Image source={require('../assets/qna.png')} style={styles.iconquiz} />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.navItem} onPress={() => router.push('/ProfilePage')}>
-        <Image source={require('../assets/account.png')} style={styles.iconprofile} />
-      </TouchableOpacity>
+      {NAV_ITEMS.map((item, idx) => {
+        const isActive = pathname === item.route;
+        const scale = anims[idx].interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 1.15],
+        });
+        const bgColor = anims[idx].interpolate({
+          inputRange: [0, 1],
+          outputRange: ['rgba(0,0,0,0)', '#FCD116'],
+        });
+        const iconStyle = [
+          styles[item.style],
+          isActive && { tintColor: '#222' },
+        ];
+        const buttonStyle = item.isBot ? styles.botButton : styles.navItem;
+        return (
+          <TouchableOpacity
+            key={item.route}
+            style={buttonStyle}
+            onPress={() => router.push(item.route)}
+            activeOpacity={0.8}
+          >
+            <Animated.View
+              style={{
+                backgroundColor: bgColor,
+                borderRadius: 32,
+                padding: isActive ? 8 : 0,
+                justifyContent: 'center',
+                alignItems: 'center',
+                transform: [{ scale }],
+              }}
+            >
+              <Image source={item.icon} style={iconStyle} />
+            </Animated.View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
@@ -49,19 +92,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   botButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#fff',
+    width: 65,
+    height: 65,
+    borderRadius: 30,
+    backgroundColor: '#b8b8b8',
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 4,
-    elevation: 4,
-    shadowColor: '#6c63ff',
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    top: -18,
+    elevation: 20,
+    shadowColor: '#000',
+    shadowOpacity: 1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 1 },
+    top: -20,
+    
   },
   iconhome: {
     width: 28,
@@ -83,12 +127,13 @@ const styles = StyleSheet.create({
     height: 30,
     resizeMode: 'contain',
   },
-
   botIcon: {
     width: 40,
     height: 40,
-    borderRadius: 22,
-    backgroundColor: '#e0e0e0',
+    borderRadius: 32,
+    backgroundColor: '#f5f5f5',
     resizeMode: 'contain',
+    padding: 30,
+    top: -5,
   },
 }); 

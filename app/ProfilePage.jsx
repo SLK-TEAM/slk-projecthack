@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Pressable } from 'react-native';
 import BottomNavbar from './BottomNavbar';
+import TopBanner from './TopBanner';
 import { useRouter } from 'expo-router';
+import Verified from '../assets/verified.png';
+import LoadingScreen from './LoadingScreen';
 
 const USER = {
   name: 'Juan Dela Cruz',
@@ -11,7 +14,22 @@ const USER = {
 
 export default function ProfilePage() {
   const [modalVisible, setModalVisible] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const router = useRouter();
+
+  const handleSignOut = () => {
+    setShowSignOutModal(false);
+    setShowLoading(true);
+    setTimeout(() => {
+      setShowLoading(false);
+      router.replace('/');
+    }, 1000);
+  };
+
+  if (showLoading) {
+    return <LoadingScreen message="Signing you out..." onFinish={() => router.replace('/')} />;
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -37,7 +55,7 @@ export default function ProfilePage() {
           </View>
         </View>
         {/* Sign Out Button */}
-        <TouchableOpacity style={styles.signOutButton} onPress={() => router.replace('/')}> 
+        <TouchableOpacity style={styles.signOutButton} onPress={() => setShowSignOutModal(true)}> 
           <Text style={styles.signOutText}>Sign Out</Text>
         </TouchableOpacity>
       </View>
@@ -49,20 +67,40 @@ export default function ProfilePage() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.idCard}>
+          <View style={styles.idCardModalBox}>
             <Image source={{ uri: USER.image }} style={styles.idImage} />
             <Text style={styles.idName}>{USER.name}</Text>
             <Text style={styles.idEmail}>{USER.email}</Text>
             <View style={styles.stampBox}>
               <Text style={styles.stampText}>GoverNice User</Text>
-              <Image source={{ uri: 'https://img.icons8.com/color/96/000000/approval--v2.png' }} style={styles.stampIcon} />
+              <Image source={Verified} style={styles.stampIcon} />
             </View>
             <Pressable style={styles.closeButton} onPress={() => setModalVisible(false)}>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Close</Text>
+              <Text style={{ color: '#000', fontWeight: 'bold' }}>Close</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
+      {/* Sign Out Confirmation Modal */}
+      <Modal
+        visible={showSignOutModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSignOutModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.signOutModalBox}> 
+            <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#0038A8', marginBottom: 18 }}>Are you sure you want to sign out?</Text>
+            <Pressable style={[styles.closeButton, { backgroundColor: 'gray', marginBottom: 8 }]} onPress={handleSignOut}>
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Logout</Text>
+            </Pressable>
+            <Pressable style={styles.closeButton} onPress={() => setShowSignOutModal(false)}>
+              <Text style={{ color: '#000', fontWeight: 'bold' }}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <TopBanner />
       <BottomNavbar />
     </View>
   );
@@ -73,8 +111,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    backgroundColor: '#f5f5f5',
-    paddingTop: 40,
+    backgroundColor: '#0038A8',
+    paddingTop: 200,
     paddingHorizontal: 18,
   },
   profileCard: {
@@ -92,18 +130,18 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 45,
     marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#6c63ff',
+    borderWidth: 5,
+    borderColor: '#0038A8',
   },
   profileName: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#222',
+    color: '#0038A8',
     marginBottom: 2,
   },
   profileEmail: {
     fontSize: 15,
-    color: '#6c63ff',
+    color: '#0038A8',
     marginBottom: 2,
   },
   progressSection: {
@@ -118,7 +156,7 @@ const styles = StyleSheet.create({
   progressTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#0038A8',
     marginBottom: 12,
   },
   progressCounters: {
@@ -131,13 +169,13 @@ const styles = StyleSheet.create({
   },
   counterLabel: {
     fontSize: 15,
-    color: '#888',
+    color: '#0038A8',
     marginBottom: 4,
   },
   counterValue: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#0038A8',
   },
   signOutButton: {
     backgroundColor: '#ff4444',
@@ -156,11 +194,11 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  idCard: {
+  idCardModalBox: {
     backgroundColor: '#fff',
     borderRadius: 18,
     alignItems: 'center',
@@ -168,7 +206,7 @@ const styles = StyleSheet.create({
     width: 300,
     elevation: 5,
     borderWidth: 2,
-    borderColor: '#6c63ff',
+    borderColor: '#0038A8',
   },
   idImage: {
     width: 70,
@@ -186,20 +224,20 @@ const styles = StyleSheet.create({
   },
   idEmail: {
     fontSize: 14,
-    color: '#6c63ff',
+    color: '#000',
     marginBottom: 10,
   },
   stampBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e0e0ff',
+    backgroundColor: '#91aadb',
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 14,
     marginBottom: 16,
   },
   stampText: {
-    color: '#6c63ff',
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
     marginRight: 8,
@@ -209,11 +247,21 @@ const styles = StyleSheet.create({
     height: 32,
   },
   closeButton: {
-    backgroundColor: '#6c63ff',
+    backgroundColor: '#FCD116',
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 32,
     alignItems: 'center',
     marginTop: 8,
+  },
+  signOutModalBox: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    alignItems: 'center',
+    padding: 28,
+    width: 300,
+    elevation: 5,
+    borderWidth: 2,
+    borderColor: '#ff4444',
   },
 }); 

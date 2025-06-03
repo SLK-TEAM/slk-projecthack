@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Dimensions
 import { useRouter } from 'expo-router';
 import BottomNavbar from './BottomNavbar';
 import TopBanner from './TopBanner';
+import Pepits from '../assets/chat-bot.png'
 // <<<<<<< HEAD
 // =======
 import 'react-native-get-random-values';
@@ -50,7 +51,12 @@ export default function HomePage() {
               buttonText="View Topic" 
               onPress={() => router.push('./LessonPages/8_Principles')} 
             />
-            <Card title="Good vs. Bad Governance" description="Discover accountability." buttonText="View Topic" />
+            <Card 
+              title="Good vs. Bad Governance" 
+              description="Discover accountability." 
+              buttonText="View Topic" 
+              onPress={() => router.push('./LessonPages/GoodvsBad')}
+            />
           </View>
         </View>
         {/* 3rd Section: Quiz */}
@@ -73,7 +79,7 @@ export default function HomePage() {
         <View style={[styles.section, styles.sectionBlue, styles.pepitsSection, { minHeight: SCREEN_HEIGHT }]}> 
           <Text style={styles.sectionTitle}>Curious Ka? Si Pepits ang bahala sayo!</Text>
           <View style={styles.pepitsRow}>
-            <Image source={{ uri: 'https://i.imgur.com/8Km9tLL.png' }} style={styles.pepitsImage} />
+            <Image source={Pepits} style={styles.pepitsImage} />
             <View style={styles.pepitsCloud}>
               <Text style={styles.pepitsText}>Kamusta! Ako si Pepits.</Text>
               <Text style={styles.pepitsText}>Kinagagalak kong makilala ka, Masaya rin ako na interesado ka din alamin kung ano ang Good Governance. Kausapin mo lang ako kung gusto mo pang maintindihan ng lubos ito.</Text>

@@ -52,7 +52,7 @@ export default function CreateAccount() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#0038A8',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
@@ -64,14 +64,14 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   backButtonText: {
-    color: '#6c63ff',
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#6c63ff',
+    color: '#fff',
     marginBottom: 32,
   },
   input: {
@@ -86,15 +86,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   createButton: {
-    width: '100%',
-    backgroundColor: '#6c63ff',
+    width: '60%',
+    backgroundColor: '#FCD116',
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 12,
   },
   createButtonText: {
-    color: '#fff',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
   },
